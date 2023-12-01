@@ -13,6 +13,7 @@ namespace WindowsFormsApp1
     public partial class Form1 : Form
     {
         private Bitmap originalImage;
+        private Bitmap bufferImage;
         Dictionary<int, int> histogram = new Dictionary<int, int>();
         private int imageWidth;
         private int imageHeight;
@@ -23,11 +24,18 @@ namespace WindowsFormsApp1
 
         private void button1_Click(object sender, EventArgs e)
         {
+            histogram.Clear();
+            // Перерисовка pictureBox2
+            pictureBox2.Paint -= pictureBox2_Paint; // Отписываемся от предыдущего обработчика события Paint
+
+            pictureBox2.Invalidate();
+
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Filter = "Image Files|*.bmp;*.jpg;*.jpeg;*.png;*.gif;*.tiff";
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
                 originalImage = new Bitmap(openFileDialog.FileName);
+                bufferImage = originalImage;
                 imageWidth = originalImage.Width;
                 imageHeight = originalImage.Height;
                 label1.Text = originalImage.Width.ToString();
@@ -45,20 +53,73 @@ namespace WindowsFormsApp1
                 DrawHistogram();
             }
         }
+        private void ResetImage()
+        {
+            if (originalImage != null)
+            {
+                originalImage = bufferImage;
+                DisplayImage();
+            }
+        }
         private void button2_Click(object sender, EventArgs e)
         {
 
             histogram.Clear();
-            pictureBox2.Image = null;
             // Перерисовка pictureBox2
+            pictureBox2.Paint -= pictureBox2_Paint; 
+
             pictureBox2.Invalidate();
+            ResetImage();
         }
 
+        private void pictureBox2_Paint(object sender, PaintEventArgs ev)
+        {
+
+            // Максимальное число пикселей определенной яркости
+            int maxHistogramValue = histogram.Values.Max();
+            // Сортирока по яркости пикселей
+            var sortedKeys = histogram.Keys.OrderBy(k => k).ToList();
+
+            int labelY = pictureBox2.Height + 30; // Исходное значение Y для подписей
+
+            int maxLabelValue = maxHistogramValue;
+            // Рисование гистограмме
+            Pen pen = new Pen(Color.Black);
+                int barWidth = 2;
+                int offsetX = 5; // Расстояние от краев по оси X
+                foreach (var entry in histogram)
+                {
+                    int i = entry.Key;
+                    float normalizedValue = entry.Value / (float)maxHistogramValue;
+                    int barHeight = (int)(normalizedValue * pictureBox2.Height);
+
+                    float normalizedX = (float)i / (float)sortedKeys.Max();
+                    int x = (int)(normalizedX * (pictureBox2.Width - 2 * offsetX)) + offsetX;
+                    int y = pictureBox2.Height - barHeight;
+
+                    ev.Graphics.DrawLine(pen, x, pictureBox2.Height, x, y);
+                }
+
+
+            
+            // Отрисовка вертикальных подписей
+            for (int i = 0; i <= pictureBox2.Height; i += pictureBox2.Height / 10)
+                {
+                    ev.Graphics.DrawString(((maxLabelValue * (pictureBox2.Height - i)) / pictureBox2.Height).ToString(), Font, Brushes.Black, 0, i);
+                }
+            // Отрисовка горизонтальной сетки
+            int horizontalLinesCount = 10; 
+            for (int i = 1; i < horizontalLinesCount; i++)
+            {
+                int y = i * pictureBox2.Height / horizontalLinesCount;
+                ev.Graphics.DrawLine(Pens.LightGray, 0, y, pictureBox2.Width, y);
+            }
+
+            
+        }
         private void DrawHistogram()
         {
-            // Build histogram
-            //Dictionary<int, int> histogram = new Dictionary<int, int>(); // Assuming 8-bit grayscale image
-
+            
             for (int y = 0; y < originalImage.Height; y++)
             {
                 for (int x = 0; x < originalImage.Width; x++)
@@ -72,76 +133,106 @@ namespace WindowsFormsApp1
                         histogram[brightness] = 1;
                 }
             }
-            // Sort keys in ascending order
-            var sortedKeys = histogram.Keys.OrderBy(k => k).ToList();
+
 
             Console.WriteLine("Brightness\tPixel Count");
             foreach (var entry in histogram)
             {
                 Console.WriteLine($"{entry.Key}\t\t{entry.Value}");
             }
-
-            // Get the maximum histogram value
-            int maxHistogramValue = histogram.Values.Max();
             label3.Text = histogram.Values.Max().ToString();
-            // Подписи к осям
-            int maxBrightnessLabelInterval = 50; // Интервал для подписей к осям
-            int labelY = pictureBox2.Height + 30; // Исходное значение Y для подписей
 
-            int maxLabelValue = maxHistogramValue;
-            // Draw histogram
-            pictureBox2.Paint += (s, ev) =>
+
+            pictureBox2.Paint += pictureBox2_Paint;
+           
+
+            pictureBox2.Invalidate(); 
+        }
+
+
+        private void NegateImage()
+        {
+            if (originalImage != null)
             {
-                Pen pen = new Pen(Color.Black);
-                int barWidth = 2;
-                int offsetX = 5; // Расстояние от краев по оси X
-                foreach (var entry in histogram)
+                Bitmap negativeImage = new Bitmap(originalImage);
+
+                for (int y = 0; y < negativeImage.Height; y++)
                 {
-                    int i = entry.Key;
-                    float normalizedValue = entry.Value / (float)maxHistogramValue;
-                    int barHeight = (int)(normalizedValue * pictureBox2.Height);
-                    
-                    float normalizedX = (float)i / (float)sortedKeys.Max();
-                    int x = (int)(normalizedX * (pictureBox2.Width - 2 * offsetX)) + offsetX;
-                    int y = pictureBox2.Height - barHeight;
-
-                    ev.Graphics.DrawLine(pen, x, pictureBox2.Height, x, y);
-                    //// Подписи к осям
-                    //if (i % 50 == 0)
-                    //{
-                    //    ev.Graphics.DrawString(entry.ToString(), Font, Brushes.Black, 0, y - 10);
-                    //}
-
-                    //// Распределение подписей к осям
-                    //if (i % 50 == 0)
-                    //{
-                    //    int textX = x + barWidth / 2 - 10; // Добавьте сдвиг для лучшей читаемости
-                    //    int textY = pictureBox2.Height + 5;
-                    //    ev.Graphics.DrawString(i.ToString(), Font, Brushes.Black, textX, textY);
-                    //}
-
-                    //if (i % 20 == 0)
-                    //{
-                    //    int textX = 0;
-                    //    int textY = y - 10;
-                    //    ev.Graphics.DrawString(entry.Value.ToString(), Font, Brushes.Black, textX, textY);
-                    //}
+                    for (int x = 0; x < negativeImage.Width; x++)
+                    {
+                        Color pixelColor = negativeImage.GetPixel(x, y);
+                        Color newColor = Color.FromArgb(255 - pixelColor.R, 255 - pixelColor.G, 255 - pixelColor.B);
+                        negativeImage.SetPixel(x, y, newColor);
+                    }
                 }
 
-                // Подписи к осям
-                
-                // Отрисовка вертикальных подписей
-                for (int i = 0; i <= pictureBox2.Height; i += pictureBox2.Height / 10)
+                originalImage = negativeImage;
+            }
+        }
+
+        private void ConvertToGrayscale()
+        {
+            if (originalImage != null)
+            {
+                Bitmap grayscaleImage = new Bitmap(originalImage);
+
+                for (int y = 0; y < grayscaleImage.Height; y++)
                 {
-                    ev.Graphics.DrawString(((maxLabelValue * (pictureBox2.Height - i)) / pictureBox2.Height).ToString(), Font, Brushes.Black, 0, i);
+                    for (int x = 0; x < grayscaleImage.Width; x++)
+                    {
+                        Color pixelColor = grayscaleImage.GetPixel(x, y);
+                        int grayValue = (int)(0.299 * pixelColor.R + 0.5876 * pixelColor.G + 0.114 * pixelColor.B);
+                        Color newColor = Color.FromArgb(grayValue, grayValue, grayValue);
+                        grayscaleImage.SetPixel(x, y, newColor);
+                    }
                 }
 
-                // Подписи осей              
-                //ev.Graphics.DrawString("Яркость", Font, Brushes.Black, pictureBox2.Width / 2, labelY);
-                //ev.Graphics.DrawString("Число пикселей", Font, Brushes.Black, -20, pictureBox2.Height / 2, new StringFormat { FormatFlags = StringFormatFlags.DirectionVertical });
-            };
+                originalImage = grayscaleImage; // Если вы хотите сразу отобразить изображение в оттенках серого
+            }
+        }
 
-            pictureBox2.Invalidate(); // Trigger the Paint event
+        private void BinarizeImage()
+        {
+            if (originalImage != null)
+            {
+                Bitmap binaryImage = new Bitmap(originalImage);
+
+                for (int y = 0; y < binaryImage.Height; y++)
+                {
+                    for (int x = 0; x < binaryImage.Width; x++)
+                    {
+                        Color pixelColor = binaryImage.GetPixel(x, y);
+                        int grayValue = (int)(0.299 * pixelColor.R + 0.587 * pixelColor.G + 0.114 * pixelColor.B);
+
+                        // Бинаризация по уровню 50%
+                        Color newColor = (grayValue < 128) ? Color.Black : Color.White;
+                        binaryImage.SetPixel(x, y, newColor);
+                    }
+                }
+
+                originalImage = binaryImage; // Если вы хотите сразу отобразить черно-белое изображение
+            }
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            histogram.Clear();
+            NegateImage();
+            DisplayImage(); // Обновляем отображение после преобразования
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            histogram.Clear();
+            ConvertToGrayscale();
+            DisplayImage(); // Обновляем отображение после преобразования
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            histogram.Clear();
+            BinarizeImage();
+            DisplayImage(); // Обновляем отображение после преобразования
         }
     }
 }
