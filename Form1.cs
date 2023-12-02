@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics.Contracts;
 using System.Drawing;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -15,11 +17,25 @@ namespace WindowsFormsApp1
         private Bitmap originalImage;
         private Bitmap bufferImage;
         Dictionary<int, int> histogram = new Dictionary<int, int>();
+        private int thresholdValue = 128;
         private int imageWidth;
         private int imageHeight;
+        private int srR = 0, srG = 0, srB = 0; 
+            
         public Form1()
         {
             InitializeComponent();
+            trackBar1.Minimum = 0;
+            trackBar1.Maximum = 255;
+            trackBar1.Value = 128;
+
+            brighttrackBar.Minimum = -255;
+            brighttrackBar.Maximum = 255;
+            brighttrackBar.Value = 0;
+
+            brighttrackBar.Minimum = -255;
+            brighttrackBar.Maximum = 255;
+            brighttrackBar.Value = 0;
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -40,6 +56,7 @@ namespace WindowsFormsApp1
                 imageHeight = originalImage.Height;
                 label1.Text = originalImage.Width.ToString();
                 label2.Text = originalImage.Height.ToString();
+                CalculateAverageRgb();
                 DisplayImage();
             }
         }
@@ -49,7 +66,7 @@ namespace WindowsFormsApp1
             {
                 pictureBox1.Image = originalImage;
                 pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
-
+                
                 DrawHistogram();
             }
         }
@@ -140,7 +157,7 @@ namespace WindowsFormsApp1
             {
                 Console.WriteLine($"{entry.Key}\t\t{entry.Value}");
             }
-            label3.Text = histogram.Values.Max().ToString();
+            //label3.Text = histogram.Values.Max().ToString();
 
 
             pictureBox2.Paint += pictureBox2_Paint;
@@ -149,6 +166,13 @@ namespace WindowsFormsApp1
             pictureBox2.Invalidate(); 
         }
 
+        public int getBrightPixel(int width, int height)
+        {
+            //  Color color = FIRSTimage.GetPixel(width, height);
+            Color color = originalImage.GetPixel(width, height);
+
+            return (int)(0.299 * color.R + 0.5876 * color.G + 0.114 * color.B);
+        }
 
         private void NegateImage()
         {
@@ -191,7 +215,7 @@ namespace WindowsFormsApp1
             }
         }
 
-        private void BinarizeImage()
+        private void BinarizeImage(int threshold)
         {
             if (originalImage != null)
             {
@@ -203,17 +227,155 @@ namespace WindowsFormsApp1
                     {
                         Color pixelColor = binaryImage.GetPixel(x, y);
                         int grayValue = (int)(0.299 * pixelColor.R + 0.587 * pixelColor.G + 0.114 * pixelColor.B);
-
-                        // Бинаризация по уровню 50%
-                        Color newColor = (grayValue < 128) ? Color.Black : Color.White;
+                        label3.Text = threshold.ToString();
+                        // Бинаризация по текущему порогу
+                        Color newColor = (grayValue < threshold) ? Color.Black : Color.White;
                         binaryImage.SetPixel(x, y, newColor);
                     }
                 }
 
-                originalImage = binaryImage; // Если вы хотите сразу отобразить черно-белое изображение
+
+                // Отображаем бинаризированное изображение
+                originalImage = binaryImage;
             }
         }
 
+        private void AdjustBrightness(int brightness)
+        {
+            if (originalImage != null)
+            {
+                Bitmap adjustedImage = new Bitmap(originalImage);
+
+                for (int y = 0; y < adjustedImage.Height; y++)
+                {
+                    for (int x = 0; x < adjustedImage.Width; x++)
+                    {
+                        Color pixelColor = adjustedImage.GetPixel(x, y);
+
+                        int newRed = Clamp(pixelColor.R + brightness, 0, 255);
+                        int newGreen = Clamp(pixelColor.G + brightness, 0, 255);
+                        int newBlue = Clamp(pixelColor.B + brightness, 0, 255);
+
+                        Color newColor = Color.FromArgb(newRed, newGreen, newBlue);
+                        adjustedImage.SetPixel(x, y, newColor);
+                    }
+                }
+
+                originalImage = adjustedImage;
+            }
+        }
+
+        private int Clamp(int value, int min, int max)
+        {
+            return Math.Max(min, Math.Min(value, max));
+        }
+        private void AdjustContrast(float value)
+        {
+            if (originalImage != null)
+            {
+                Bitmap contrastImage = new Bitmap(originalImage);
+                float contrast = 0;
+                float sumY = 0;
+                int newR = 0, newG = 0, newB = 0;
+
+                if (value <= 0)
+                {
+                    if (value == 0)
+                        contrast = 1;
+                    else contrast = 1 / (-value);
+                }
+                else contrast = value;
+
+                // Первый проход: вычисление среднего значения яркости по изображению
+                for (int y = 0; y < originalImage.Height; y++)
+                {
+                    for (int x = 0; x < originalImage.Width; x++)
+                    {
+                        Color pixelColor = originalImage.GetPixel(x, y);
+                        
+                        int coloryValue = getBrightPixel(x, y);
+
+
+                        newR = Convert.ToInt32(contrast * (pixelColor.R - srR) + srR);
+                        newG = Convert.ToInt32(contrast * (pixelColor.G - srG) + srG);
+                        newB = Convert.ToInt32(contrast * (pixelColor.B - srB) + srB);
+
+                        newR = Clamp((int)newR, 0, 255);
+                        newG = Clamp((int)newG, 0, 255);
+                        newB = Clamp((int)newB, 0, 255);
+
+                        Color newPixelColor = Color.FromArgb(newR, newG, newB);
+                        //sumY += coloryValue;
+
+                        contrastImage.SetPixel(x, y, newPixelColor);
+                    }
+                }
+                originalImage = contrastImage;
+                //float averageY = sumY / (adjustedImage.Width * adjustedImage.Height);
+
+
+
+                //// Второй проход: применение коррекции контрастности
+                //for (int y = 0; y < adjustedImage.Height; y++)
+                //{
+                //    for (int x = 0; x < adjustedImage.Width; x++)
+                //    {
+                //        Color pixelColor = adjustedImage.GetPixel(x, y);
+                //        int grayValue = (int)(0.299 * pixelColor.R + 0.587 * pixelColor.G + 0.114 * pixelColor.B);
+
+                //        float newY = contrast * (grayValue - averageY) + averageY;
+                        
+                //        int newGrayValue = Clamp((int)newY, 0, 255);
+
+                //        Color newColor = Color.FromArgb(newGrayValue, newGrayValue, newGrayValue);
+                //        adjustedImage.SetPixel(x, y, newColor);
+                //    }
+                //}
+
+                //originalImage = adjustedImage;
+            }
+        }
+        public void CalculateAverageRgb()
+        {
+            int height = originalImage.Height;
+            int width = originalImage.Width;
+            int rAvg = 0;
+            int gAvg = 0;
+            int bAvg = 0;
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    rAvg += originalImage.GetPixel(x, y).R;
+                    gAvg += originalImage.GetPixel(x, y).G;
+                    bAvg += originalImage.GetPixel(x, y).B;
+                }
+            }
+            rAvg /= height * width;
+            gAvg /= height * width;
+            bAvg /= height * width;
+            srR = rAvg;
+            srG = gAvg;
+            srB = bAvg;
+        }
+        private void brighttrackBar_Scroll(object sender, EventArgs e)
+        {
+            int brightnessValue = brighttrackBar.Value;
+        
+            ResetImage();
+            histogram.Clear();
+            AdjustBrightness(brightnessValue);
+            DisplayImage(); // Обновляем отображение после преобразования
+        }
+        private void trackBar1_Scroll(object sender, EventArgs e)
+        {
+            ResetImage();
+            histogram.Clear();
+            thresholdValue = trackBar1.Value;
+            BinarizeImage(trackBar1.Value);
+            DisplayImage(); // Обновляем отображение после преобразования
+
+        }
         private void button3_Click(object sender, EventArgs e)
         {
             histogram.Clear();
@@ -231,7 +393,17 @@ namespace WindowsFormsApp1
         private void button5_Click(object sender, EventArgs e)
         {
             histogram.Clear();
-            BinarizeImage();
+            BinarizeImage(thresholdValue);
+            DisplayImage(); // Обновляем отображение после преобразования
+        }
+
+        private void ContrasttrackBar_Scroll(object sender, EventArgs e)
+        {
+            float contrastValue = ContrasttrackBar.Value / 1.0f; // Подстраиваем значение к нужному диапазону
+            CalculateAverageRgb();
+            ResetImage();
+            histogram.Clear();
+            AdjustContrast(contrastValue);
             DisplayImage(); // Обновляем отображение после преобразования
         }
     }

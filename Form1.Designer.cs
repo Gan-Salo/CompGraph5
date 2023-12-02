@@ -38,8 +38,14 @@
             this.button3 = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
             this.button5 = new System.Windows.Forms.Button();
+            this.trackBar1 = new System.Windows.Forms.TrackBar();
+            this.brighttrackBar = new System.Windows.Forms.TrackBar();
+            this.ContrasttrackBar = new System.Windows.Forms.TrackBar();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.brighttrackBar)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ContrasttrackBar)).BeginInit();
             this.SuspendLayout();
             // 
             // button1
@@ -135,11 +141,41 @@
             this.button5.UseVisualStyleBackColor = true;
             this.button5.Click += new System.EventHandler(this.button5_Click);
             // 
+            // trackBar1
+            // 
+            this.trackBar1.Enabled = false;
+            this.trackBar1.Location = new System.Drawing.Point(565, 224);
+            this.trackBar1.Name = "trackBar1";
+            this.trackBar1.Size = new System.Drawing.Size(121, 45);
+            this.trackBar1.TabIndex = 10;
+            this.trackBar1.Scroll += new System.EventHandler(this.trackBar1_Scroll);
+            // 
+            // brighttrackBar
+            // 
+            this.brighttrackBar.Location = new System.Drawing.Point(565, 308);
+            this.brighttrackBar.Name = "brighttrackBar";
+            this.brighttrackBar.Size = new System.Drawing.Size(121, 45);
+            this.brighttrackBar.TabIndex = 11;
+            this.brighttrackBar.Scroll += new System.EventHandler(this.brighttrackBar_Scroll);
+            // 
+            // ContrasttrackBar
+            // 
+            this.ContrasttrackBar.Location = new System.Drawing.Point(565, 372);
+            this.ContrasttrackBar.Maximum = 255;
+            this.ContrasttrackBar.Minimum = -255;
+            this.ContrasttrackBar.Name = "ContrasttrackBar";
+            this.ContrasttrackBar.Size = new System.Drawing.Size(121, 45);
+            this.ContrasttrackBar.TabIndex = 12;
+            this.ContrasttrackBar.Scroll += new System.EventHandler(this.ContrasttrackBar_Scroll);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1053, 516);
+            this.Controls.Add(this.ContrasttrackBar);
+            this.Controls.Add(this.brighttrackBar);
+            this.Controls.Add(this.trackBar1);
             this.Controls.Add(this.button5);
             this.Controls.Add(this.button4);
             this.Controls.Add(this.button3);
@@ -154,6 +190,9 @@
             this.Text = "Form1";
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.brighttrackBar)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ContrasttrackBar)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -171,6 +210,9 @@
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Button button4;
         private System.Windows.Forms.Button button5;
+        private System.Windows.Forms.TrackBar trackBar1;
+        private System.Windows.Forms.TrackBar brighttrackBar;
+        private System.Windows.Forms.TrackBar ContrasttrackBar;
     }
 }
 
