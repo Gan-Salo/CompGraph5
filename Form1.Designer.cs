@@ -41,6 +41,13 @@
             this.trackBar1 = new System.Windows.Forms.TrackBar();
             this.brighttrackBar = new System.Windows.Forms.TrackBar();
             this.ContrasttrackBar = new System.Windows.Forms.TrackBar();
+            this.binarizelabel = new System.Windows.Forms.Label();
+            this.brightlabel = new System.Windows.Forms.Label();
+            this.contrastlabel = new System.Windows.Forms.Label();
+            this.contrasttextBox = new System.Windows.Forms.TextBox();
+            this.contrastbutton = new System.Windows.Forms.Button();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
@@ -64,39 +71,42 @@
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(128, 27);
             this.button2.TabIndex = 1;
-            this.button2.Text = "button2";
+            this.button2.Text = "Сброс";
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // pictureBox1
             // 
-            this.pictureBox1.Location = new System.Drawing.Point(26, 30);
+            this.pictureBox1.Location = new System.Drawing.Point(26, 21);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(524, 440);
+            this.pictureBox1.Size = new System.Drawing.Size(524, 449);
             this.pictureBox1.TabIndex = 2;
             this.pictureBox1.TabStop = false;
+            this.pictureBox1.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox1_Paint);
             // 
             // pictureBox2
             // 
-            this.pictureBox2.Location = new System.Drawing.Point(702, 30);
+            this.pictureBox2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.pictureBox2.Location = new System.Drawing.Point(743, 21);
             this.pictureBox2.Name = "pictureBox2";
-            this.pictureBox2.Size = new System.Drawing.Size(260, 400);
+            this.pictureBox2.Size = new System.Drawing.Size(260, 361);
             this.pictureBox2.TabIndex = 3;
             this.pictureBox2.TabStop = false;
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(575, 48);
+            this.label1.Location = new System.Drawing.Point(634, 43);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(35, 13);
             this.label1.TabIndex = 4;
             this.label1.Text = "label1";
+            this.label1.Click += new System.EventHandler(this.label1_Click);
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(575, 78);
+            this.label2.Location = new System.Drawing.Point(634, 76);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(35, 13);
             this.label2.TabIndex = 5;
@@ -105,7 +115,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(575, 111);
+            this.label3.Location = new System.Drawing.Point(685, 151);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(35, 13);
             this.label3.TabIndex = 6;
@@ -113,7 +123,7 @@
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(656, 449);
+            this.button3.Location = new System.Drawing.Point(559, 344);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(125, 38);
             this.button3.TabIndex = 7;
@@ -123,9 +133,9 @@
             // 
             // button4
             // 
-            this.button4.Location = new System.Drawing.Point(787, 449);
+            this.button4.Location = new System.Drawing.Point(559, 388);
             this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(118, 38);
+            this.button4.Size = new System.Drawing.Size(125, 38);
             this.button4.TabIndex = 8;
             this.button4.Text = "Серость";
             this.button4.UseVisualStyleBackColor = true;
@@ -133,9 +143,9 @@
             // 
             // button5
             // 
-            this.button5.Location = new System.Drawing.Point(911, 449);
+            this.button5.Location = new System.Drawing.Point(559, 432);
             this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(118, 38);
+            this.button5.Size = new System.Drawing.Size(125, 38);
             this.button5.TabIndex = 9;
             this.button5.Text = "Бинаризация";
             this.button5.UseVisualStyleBackColor = true;
@@ -143,8 +153,7 @@
             // 
             // trackBar1
             // 
-            this.trackBar1.Enabled = false;
-            this.trackBar1.Location = new System.Drawing.Point(565, 224);
+            this.trackBar1.Location = new System.Drawing.Point(565, 167);
             this.trackBar1.Name = "trackBar1";
             this.trackBar1.Size = new System.Drawing.Size(121, 45);
             this.trackBar1.TabIndex = 10;
@@ -152,7 +161,7 @@
             // 
             // brighttrackBar
             // 
-            this.brighttrackBar.Location = new System.Drawing.Point(565, 308);
+            this.brighttrackBar.Location = new System.Drawing.Point(556, 258);
             this.brighttrackBar.Name = "brighttrackBar";
             this.brighttrackBar.Size = new System.Drawing.Size(121, 45);
             this.brighttrackBar.TabIndex = 11;
@@ -160,19 +169,91 @@
             // 
             // ContrasttrackBar
             // 
-            this.ContrasttrackBar.Location = new System.Drawing.Point(565, 372);
-            this.ContrasttrackBar.Maximum = 255;
-            this.ContrasttrackBar.Minimum = -255;
+            this.ContrasttrackBar.Enabled = false;
+            this.ContrasttrackBar.Location = new System.Drawing.Point(812, 409);
+            this.ContrasttrackBar.Maximum = 100;
+            this.ContrasttrackBar.Minimum = -100;
             this.ContrasttrackBar.Name = "ContrasttrackBar";
             this.ContrasttrackBar.Size = new System.Drawing.Size(121, 45);
             this.ContrasttrackBar.TabIndex = 12;
+            this.ContrasttrackBar.Visible = false;
             this.ContrasttrackBar.Scroll += new System.EventHandler(this.ContrasttrackBar_Scroll);
+            // 
+            // binarizelabel
+            // 
+            this.binarizelabel.AutoSize = true;
+            this.binarizelabel.Location = new System.Drawing.Point(556, 151);
+            this.binarizelabel.Name = "binarizelabel";
+            this.binarizelabel.Size = new System.Drawing.Size(123, 13);
+            this.binarizelabel.TabIndex = 13;
+            this.binarizelabel.Text = "Уровень бинаризации:";
+            // 
+            // brightlabel
+            // 
+            this.brightlabel.AutoSize = true;
+            this.brightlabel.Location = new System.Drawing.Point(563, 242);
+            this.brightlabel.Name = "brightlabel";
+            this.brightlabel.Size = new System.Drawing.Size(95, 13);
+            this.brightlabel.TabIndex = 14;
+            this.brightlabel.Text = "Уровень яркости";
+            // 
+            // contrastlabel
+            // 
+            this.contrastlabel.AutoSize = true;
+            this.contrastlabel.Location = new System.Drawing.Point(804, 393);
+            this.contrastlabel.Name = "contrastlabel";
+            this.contrastlabel.Size = new System.Drawing.Size(129, 13);
+            this.contrastlabel.TabIndex = 15;
+            this.contrastlabel.Text = "Уровень контрастности";
+            this.contrastlabel.Visible = false;
+            // 
+            // contrasttextBox
+            // 
+            this.contrasttextBox.Location = new System.Drawing.Point(761, 460);
+            this.contrasttextBox.Name = "contrasttextBox";
+            this.contrasttextBox.Size = new System.Drawing.Size(100, 20);
+            this.contrasttextBox.TabIndex = 16;
+            // 
+            // contrastbutton
+            // 
+            this.contrastbutton.Location = new System.Drawing.Point(867, 450);
+            this.contrastbutton.Name = "contrastbutton";
+            this.contrastbutton.Size = new System.Drawing.Size(108, 38);
+            this.contrastbutton.TabIndex = 17;
+            this.contrastbutton.Text = "Контрастность";
+            this.contrastbutton.UseVisualStyleBackColor = true;
+            this.contrastbutton.Click += new System.EventHandler(this.contrastbutton_Click);
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(573, 43);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(55, 13);
+            this.label4.TabIndex = 18;
+            this.label4.Text = "Ширина : ";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(573, 76);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(48, 13);
+            this.label5.TabIndex = 19;
+            this.label5.Text = "Высота:";
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1053, 516);
+            this.ClientSize = new System.Drawing.Size(1015, 516);
+            this.Controls.Add(this.label5);
+            this.Controls.Add(this.label4);
+            this.Controls.Add(this.contrastbutton);
+            this.Controls.Add(this.contrasttextBox);
+            this.Controls.Add(this.contrastlabel);
+            this.Controls.Add(this.brightlabel);
+            this.Controls.Add(this.binarizelabel);
             this.Controls.Add(this.ContrasttrackBar);
             this.Controls.Add(this.brighttrackBar);
             this.Controls.Add(this.trackBar1);
@@ -213,6 +294,13 @@
         private System.Windows.Forms.TrackBar trackBar1;
         private System.Windows.Forms.TrackBar brighttrackBar;
         private System.Windows.Forms.TrackBar ContrasttrackBar;
+        private System.Windows.Forms.Label binarizelabel;
+        private System.Windows.Forms.Label brightlabel;
+        private System.Windows.Forms.Label contrastlabel;
+        private System.Windows.Forms.TextBox contrasttextBox;
+        private System.Windows.Forms.Button contrastbutton;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label label5;
     }
 }
 
