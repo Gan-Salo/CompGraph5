@@ -62,7 +62,7 @@ namespace WindowsFormsApp1
                 imageHeight = originalImage.Height;
                 label1.Text = originalImage.Width.ToString();
                 label2.Text = originalImage.Height.ToString();
-                CalculateAverageRgb();
+                //CalculateAverageRgb();
                 histogram.Clear(); 
                 DisplayImage();
             }
@@ -248,7 +248,6 @@ namespace WindowsFormsApp1
                     }
                 }
 
-
                 // Отображаем бинаризированное изображение
                 originalImage = binaryImage;
             }
@@ -286,8 +285,7 @@ namespace WindowsFormsApp1
         private void AdjustContrast(float value)
         {
             if (originalImage != null)
-            {
-                
+            {              
                 Bitmap contrastImage = new Bitmap(originalImage);
                 float contrast = 0;
                 float sumY = 0, avg = 0;
@@ -296,7 +294,7 @@ namespace WindowsFormsApp1
                 int width = originalImage.Width;
                 contrast = value;
 
-                // Первый проход: вычисление среднего значения яркости по изображению
+
                 for (int y = 0; y < originalImage.Height; y++)
                 {
                     for (int x = 0; x < originalImage.Width; x++)
@@ -356,7 +354,7 @@ namespace WindowsFormsApp1
         private void ContrasttrackBar_Scroll(object sender, EventArgs e)
         {
             float contrastValue = ContrasttrackBar.Value; // Подстраиваем значение к нужному диапазону
-            CalculateAverageRgb();
+            //CalculateAverageRgb();
             ResetImage();
             histogram.Clear();
             AdjustContrast(contrastValue);
@@ -390,7 +388,7 @@ namespace WindowsFormsApp1
         private void contrastbutton_Click(object sender, EventArgs e)
         {
             
-            CalculateAverageRgb();
+            //CalculateAverageRgb();
             ResetImage();
             histogram.Clear();
             //AdjustContrast(contrastValue);

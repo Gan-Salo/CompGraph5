@@ -87,9 +87,9 @@
             // pictureBox2
             // 
             this.pictureBox2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pictureBox2.Location = new System.Drawing.Point(743, 21);
+            this.pictureBox2.Location = new System.Drawing.Point(743, 12);
             this.pictureBox2.Name = "pictureBox2";
-            this.pictureBox2.Size = new System.Drawing.Size(260, 361);
+            this.pictureBox2.Size = new System.Drawing.Size(260, 483);
             this.pictureBox2.TabIndex = 3;
             this.pictureBox2.TabStop = false;
             // 
@@ -115,7 +115,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(685, 151);
+            this.label3.Location = new System.Drawing.Point(685, 120);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(35, 13);
             this.label3.TabIndex = 6;
@@ -123,7 +123,7 @@
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(559, 344);
+            this.button3.Location = new System.Drawing.Point(570, 371);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(125, 38);
             this.button3.TabIndex = 7;
@@ -133,7 +133,7 @@
             // 
             // button4
             // 
-            this.button4.Location = new System.Drawing.Point(559, 388);
+            this.button4.Location = new System.Drawing.Point(570, 415);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(125, 38);
             this.button4.TabIndex = 8;
@@ -143,7 +143,7 @@
             // 
             // button5
             // 
-            this.button5.Location = new System.Drawing.Point(559, 432);
+            this.button5.Location = new System.Drawing.Point(569, 459);
             this.button5.Name = "button5";
             this.button5.Size = new System.Drawing.Size(125, 38);
             this.button5.TabIndex = 9;
@@ -153,7 +153,7 @@
             // 
             // trackBar1
             // 
-            this.trackBar1.Location = new System.Drawing.Point(565, 167);
+            this.trackBar1.Location = new System.Drawing.Point(576, 145);
             this.trackBar1.Name = "trackBar1";
             this.trackBar1.Size = new System.Drawing.Size(121, 45);
             this.trackBar1.TabIndex = 10;
@@ -161,7 +161,7 @@
             // 
             // brighttrackBar
             // 
-            this.brighttrackBar.Location = new System.Drawing.Point(556, 258);
+            this.brighttrackBar.Location = new System.Drawing.Point(576, 218);
             this.brighttrackBar.Name = "brighttrackBar";
             this.brighttrackBar.Size = new System.Drawing.Size(121, 45);
             this.brighttrackBar.TabIndex = 11;
@@ -170,11 +170,11 @@
             // ContrasttrackBar
             // 
             this.ContrasttrackBar.Enabled = false;
-            this.ContrasttrackBar.Location = new System.Drawing.Point(812, 409);
+            this.ContrasttrackBar.Location = new System.Drawing.Point(346, 476);
             this.ContrasttrackBar.Maximum = 100;
             this.ContrasttrackBar.Minimum = -100;
             this.ContrasttrackBar.Name = "ContrasttrackBar";
-            this.ContrasttrackBar.Size = new System.Drawing.Size(121, 45);
+            this.ContrasttrackBar.Size = new System.Drawing.Size(10, 45);
             this.ContrasttrackBar.TabIndex = 12;
             this.ContrasttrackBar.Visible = false;
             this.ContrasttrackBar.Scroll += new System.EventHandler(this.ContrasttrackBar_Scroll);
@@ -182,7 +182,7 @@
             // binarizelabel
             // 
             this.binarizelabel.AutoSize = true;
-            this.binarizelabel.Location = new System.Drawing.Point(556, 151);
+            this.binarizelabel.Location = new System.Drawing.Point(556, 120);
             this.binarizelabel.Name = "binarizelabel";
             this.binarizelabel.Size = new System.Drawing.Size(123, 13);
             this.binarizelabel.TabIndex = 13;
@@ -191,7 +191,7 @@
             // brightlabel
             // 
             this.brightlabel.AutoSize = true;
-            this.brightlabel.Location = new System.Drawing.Point(563, 242);
+            this.brightlabel.Location = new System.Drawing.Point(573, 193);
             this.brightlabel.Name = "brightlabel";
             this.brightlabel.Size = new System.Drawing.Size(95, 13);
             this.brightlabel.TabIndex = 14;
@@ -200,7 +200,7 @@
             // contrastlabel
             // 
             this.contrastlabel.AutoSize = true;
-            this.contrastlabel.Location = new System.Drawing.Point(804, 393);
+            this.contrastlabel.Location = new System.Drawing.Point(567, 280);
             this.contrastlabel.Name = "contrastlabel";
             this.contrastlabel.Size = new System.Drawing.Size(129, 13);
             this.contrastlabel.TabIndex = 15;
@@ -209,16 +209,16 @@
             // 
             // contrasttextBox
             // 
-            this.contrasttextBox.Location = new System.Drawing.Point(761, 460);
+            this.contrasttextBox.Location = new System.Drawing.Point(563, 307);
             this.contrasttextBox.Name = "contrasttextBox";
-            this.contrasttextBox.Size = new System.Drawing.Size(100, 20);
+            this.contrasttextBox.Size = new System.Drawing.Size(65, 20);
             this.contrasttextBox.TabIndex = 16;
             // 
             // contrastbutton
             // 
-            this.contrastbutton.Location = new System.Drawing.Point(867, 450);
+            this.contrastbutton.Location = new System.Drawing.Point(637, 307);
             this.contrastbutton.Name = "contrastbutton";
-            this.contrastbutton.Size = new System.Drawing.Size(108, 38);
+            this.contrastbutton.Size = new System.Drawing.Size(100, 20);
             this.contrastbutton.TabIndex = 17;
             this.contrastbutton.Text = "Контрастность";
             this.contrastbutton.UseVisualStyleBackColor = true;
@@ -268,7 +268,7 @@
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "ЛР №5 Компьютерная графика";
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).EndInit();
