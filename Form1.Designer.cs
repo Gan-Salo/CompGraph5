@@ -48,6 +48,7 @@
             this.contrastbutton = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
@@ -57,9 +58,9 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(26, 477);
+            this.button1.Location = new System.Drawing.Point(26, 517);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(151, 27);
+            this.button1.Size = new System.Drawing.Size(151, 60);
             this.button1.TabIndex = 0;
             this.button1.Text = "Выбрать изображение";
             this.button1.UseVisualStyleBackColor = true;
@@ -67,9 +68,9 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(197, 477);
+            this.button2.Location = new System.Drawing.Point(197, 517);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(128, 27);
+            this.button2.Size = new System.Drawing.Size(128, 60);
             this.button2.TabIndex = 1;
             this.button2.Text = "Сброс";
             this.button2.UseVisualStyleBackColor = true;
@@ -79,7 +80,7 @@
             // 
             this.pictureBox1.Location = new System.Drawing.Point(26, 21);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(524, 449);
+            this.pictureBox1.Size = new System.Drawing.Size(524, 476);
             this.pictureBox1.TabIndex = 2;
             this.pictureBox1.TabStop = false;
             this.pictureBox1.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox1_Paint);
@@ -89,7 +90,7 @@
             this.pictureBox2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.pictureBox2.Location = new System.Drawing.Point(743, 12);
             this.pictureBox2.Name = "pictureBox2";
-            this.pictureBox2.Size = new System.Drawing.Size(260, 483);
+            this.pictureBox2.Size = new System.Drawing.Size(260, 574);
             this.pictureBox2.TabIndex = 3;
             this.pictureBox2.TabStop = false;
             // 
@@ -117,9 +118,8 @@
             this.label3.AutoSize = true;
             this.label3.Location = new System.Drawing.Point(685, 120);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(35, 13);
+            this.label3.Size = new System.Drawing.Size(0, 13);
             this.label3.TabIndex = 6;
-            this.label3.Text = "label3";
             // 
             // button3
             // 
@@ -170,7 +170,7 @@
             // ContrasttrackBar
             // 
             this.ContrasttrackBar.Enabled = false;
-            this.ContrasttrackBar.Location = new System.Drawing.Point(346, 476);
+            this.ContrasttrackBar.Location = new System.Drawing.Point(372, 517);
             this.ContrasttrackBar.Maximum = 100;
             this.ContrasttrackBar.Minimum = -100;
             this.ContrasttrackBar.Name = "ContrasttrackBar";
@@ -242,11 +242,21 @@
             this.label5.TabIndex = 19;
             this.label5.Text = "Высота:";
             // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(685, 193);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(35, 13);
+            this.label6.TabIndex = 20;
+            this.label6.Text = "label6";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1015, 516);
+            this.ClientSize = new System.Drawing.Size(1015, 598);
+            this.Controls.Add(this.label6);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.contrastbutton);
@@ -301,6 +311,7 @@
         private System.Windows.Forms.Button contrastbutton;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label label6;
     }
 }
 

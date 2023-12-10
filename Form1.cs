@@ -5,6 +5,7 @@ using System.Data;
 using System.Diagnostics.Contracts;
 using System.Drawing;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,11 +17,10 @@ namespace WindowsFormsApp1
     {
         private Bitmap originalImage;
         private Bitmap bufferImage;
-        Dictionary<int, int> histogram = new Dictionary<int, int>();
-        private int thresholdValue = 128;
+        Dictionary<int, int> histogram = new Dictionary<int, int>(); //Словарь для хранения значений яркости пискелей для гистограммы
+        private int thresholdValue = 128; //Значение на ползунке бинаризации
         private int imageWidth;
         private int imageHeight;
-        private int srR = 0, srG = 0, srB = 0; 
             
         public Form1()
         {
@@ -62,11 +62,12 @@ namespace WindowsFormsApp1
                 imageHeight = originalImage.Height;
                 label1.Text = originalImage.Width.ToString();
                 label2.Text = originalImage.Height.ToString();
-                //CalculateAverageRgb();
                 histogram.Clear(); 
                 DisplayImage();
             }
         }
+
+        //Функция отображения изображения
         private void DisplayImage()
         {
             if (originalImage != null)
@@ -77,6 +78,8 @@ namespace WindowsFormsApp1
                 DrawHistogram();
             }
         }
+
+        //Функция сброса изображения
         private void ResetImage()
         {
             if (originalImage != null)
@@ -91,38 +94,58 @@ namespace WindowsFormsApp1
         {
 
             histogram.Clear();
-            // Перерисовка pictureBox2
+            // Перерисовка гистограммы
             pictureBox2.Paint -= pictureBox2_Paint; 
 
             pictureBox2.Invalidate();
             ResetImage();
         }
 
+        //Поле для гистограммы
         private void pictureBox2_Paint(object sender, PaintEventArgs ev)
-        {
-         
-            // Сортирока по яркости пикселей
+        {    
+            //Сортирока по яркости пикселей
             var sortedKeys = histogram.Keys.OrderBy(k => k).ToList();
-
-            int labelY = pictureBox2.Height + 30; //
-            // Максимальное число пикселей определенной яркости
+            int labelY = pictureBox2.Height + 30; 
+            
+            //Максимальное число пикселей определенной яркости
             int maxHistogramValue = histogram.Values.Max();
             int maxLabelValue = maxHistogramValue;
-            // Рисование гистограмме
-            Pen pen = new Pen(Color.Black);
+            
+            //Отрисовка значений гистограммы
+            Pen pen = new Pen(Color.DarkRed);
                 int barWidth = 2;
                 int offsetX = 5; // Расстояние от краев по оси X
                 foreach (var entry in histogram)
                 {
                     int i = entry.Key;
                     float normalizedValue = entry.Value / (float)maxHistogramValue;
-                    int barHeight = (int)(normalizedValue * pictureBox2.Height);
+                    int barHeight = (int)(normalizedValue * pictureBox2.Height / 1.2);
 
                     float normalizedX = (float)i / (float)sortedKeys.Max();
                     int x = (int)(normalizedX * (pictureBox2.Width - 2 * offsetX)) + offsetX;
                     int y = pictureBox2.Height - barHeight;
-                    
-                    ev.Graphics.DrawLine(pen, x, pictureBox2.Height, x, y);
+
+                // Проверка на переполнение x и y
+                if (x < offsetX)
+                {
+                    x = offsetX;
+                }
+                else if (x > pictureBox2.Width - offsetX)
+                {
+                    x = pictureBox2.Width - offsetX;
+                }
+                // Проверка на переполнение
+                if (y < 0)
+                    {
+                        y = 0;
+                    }
+                    else if (y > pictureBox2.Height)
+                    {
+                        y = pictureBox2.Height;
+                    }
+
+                ev.Graphics.DrawLine(pen, x, pictureBox2.Height, x, y);
                 }
           
             // Отрисовка вертикальных подписей
@@ -130,7 +153,7 @@ namespace WindowsFormsApp1
                 {
                     ev.Graphics.DrawString(((maxLabelValue * (pictureBox2.Height - i)) / pictureBox2.Height).ToString(), Font, Brushes.Black, 0, i);
                 }
-            // Отрисовка горизонтальной сетки
+
             int horizontalLinesCount = 10; 
             for (int i = 1; i < horizontalLinesCount; i++)
             {
@@ -140,6 +163,8 @@ namespace WindowsFormsApp1
 
             
         }
+
+        //Функция рисования гистограммы яркости
         private void DrawHistogram()
         {
             
@@ -157,29 +182,26 @@ namespace WindowsFormsApp1
                 }
             }
 
-
-            Console.WriteLine("Brightness\tPixel Count");
-            foreach (var entry in histogram)
-            {
-                Console.WriteLine($"{entry.Key}\t\t{entry.Value}");
-            }
+            //Console.WriteLine("Brightness\tPixel Count");
+            //foreach (var entry in histogram)
+            //{
+            //    Console.WriteLine($"{entry.Key}\t\t{entry.Value}");
+            //}
             //label3.Text = histogram.Values.Max().ToString();
-
-
-            pictureBox2.Paint += pictureBox2_Paint;
-           
-
+            
+            pictureBox2.Paint += pictureBox2_Paint;          
             pictureBox2.Invalidate(); 
         }
 
+        //Функция расчёта яркости пискеля по формуле
         public int getBrightPixel(int width, int height)
         {
-            //  Color color = FIRSTimage.GetPixel(width, height);
             Color color = originalImage.GetPixel(width, height);
 
             return (int)(0.299 * color.R + 0.5876 * color.G + 0.114 * color.B);
         }
 
+        //Функция получения изображения в негативе
         private void NegateImage()
         {
             if (originalImage != null)
@@ -200,6 +222,7 @@ namespace WindowsFormsApp1
             }
         }
 
+        //Функция перехода к оттенкам серого
         private void ConvertToGrayscale()
         {
             if (originalImage != null)
@@ -209,18 +232,18 @@ namespace WindowsFormsApp1
                 for (int y = 0; y < grayscaleImage.Height; y++)
                 {
                     for (int x = 0; x < grayscaleImage.Width; x++)
-                    {
-                        //Color pixelColor = grayscaleImage.GetPixel(x, y);
+                    {                      
                         int grayValue = getBrightPixel(x, y);
                         Color newColor = Color.FromArgb(grayValue, grayValue, grayValue);
                         grayscaleImage.SetPixel(x, y, newColor);
                     }
                 }
 
-                originalImage = grayscaleImage; // Если вы хотите сразу отобразить изображение в оттенках серого
+                originalImage = grayscaleImage;
             }
         }
 
+        //Ползунок регулировки бинаризации 
         private void BinarizeImage(int level)
         {
             if (originalImage != null)
@@ -253,6 +276,7 @@ namespace WindowsFormsApp1
             }
         }
 
+        //Ползунок регулировки яркости
         private void AdjustBrightness(int brightness)
         {
             if (originalImage != null)
@@ -271,6 +295,7 @@ namespace WindowsFormsApp1
 
                         Color newColor = Color.FromArgb(newRed, newGreen, newBlue);
                         adjustedImage.SetPixel(x, y, newColor);
+                        label6.Text = brightness.ToString();
                     }
                 }
 
@@ -278,10 +303,13 @@ namespace WindowsFormsApp1
             }
         }
 
+        //Проверка значения цвета на принадлежность промежутку от 0 до 255
         private int Clamp(int value, int min, int max)
         {
             return Math.Max(min, Math.Min(value, max));
         }
+
+        //Вычисление контрастности
         private void AdjustContrast(float value)
         {
             if (originalImage != null)
@@ -290,10 +318,7 @@ namespace WindowsFormsApp1
                 float contrast = 0;
                 float sumY = 0, avg = 0;
                 int newR = 0, newG = 0, newB = 0;
-                int height = originalImage.Height;
-                int width = originalImage.Width;
                 contrast = value;
-
 
                 for (int y = 0; y < originalImage.Height; y++)
                 {
@@ -302,7 +327,7 @@ namespace WindowsFormsApp1
                         sumY += getBrightPixel(x, y);
                     }
                 }
-                avg = sumY / (height * width);
+                avg = sumY / (originalImage.Height * originalImage.Width);
 
                 for (int y = 0; y < originalImage.Height; y++)
                 {
@@ -327,39 +352,19 @@ namespace WindowsFormsApp1
                 
             }
         }
-        public void CalculateAverageRgb()
-        {
-            int height = originalImage.Height;
-            int width = originalImage.Width;
-            int rAvg = 0;
-            int gAvg = 0;
-            int bAvg = 0;
-            for (int x = 0; x < width; x++)
-            {
-                for (int y = 0; y < height; y++)
-                {
-                    rAvg += originalImage.GetPixel(x, y).R;
-                    gAvg += originalImage.GetPixel(x, y).G;
-                    bAvg += originalImage.GetPixel(x, y).B;
-                }
-            }
-            rAvg /= height * width;
-            gAvg /= height * width;
-            bAvg /= height * width;
-            srR = rAvg;
-            srG = gAvg;
-            srB = bAvg;
-        }
-
+ 
+        //Ползунок контрастности - ДЕАКТИВИРОВАНО!
         private void ContrasttrackBar_Scroll(object sender, EventArgs e)
         {
-            float contrastValue = ContrasttrackBar.Value; // Подстраиваем значение к нужному диапазону
-            //CalculateAverageRgb();
-            ResetImage();
-            histogram.Clear();
-            AdjustContrast(contrastValue);
-            DisplayImage(); // Обновляем отображение после преобразования
+            //float contrastValue = ContrasttrackBar.Value; // Подстраиваем значение к нужному диапазону
+            ////CalculateAverageRgb();
+            //ResetImage();
+            //histogram.Clear();
+            //AdjustContrast(contrastValue);
+            //DisplayImage(); // Обновляем отображение после преобразования
         }
+
+        //Ползунок яркости
         private void brighttrackBar_Scroll(object sender, EventArgs e)
         {
             int brightnessValue = brighttrackBar.Value;
@@ -369,15 +374,19 @@ namespace WindowsFormsApp1
             AdjustBrightness(brightnessValue);
             DisplayImage(); // Обновляем отображение после преобразования
         }
+
+
         private void trackBar1_Scroll(object sender, EventArgs e)
         {
             ResetImage();
             histogram.Clear();
             thresholdValue = trackBar1.Value;
             BinarizeImage(trackBar1.Value);
-            DisplayImage(); // Обновляем отображение после преобразования
+            DisplayImage(); 
 
         }
+
+        //Кнопка - негатив
         private void button3_Click(object sender, EventArgs e)
         {
             histogram.Clear();
@@ -385,22 +394,19 @@ namespace WindowsFormsApp1
             DisplayImage(); // Обновляем отображение после преобразования
         }
 
+        //Кнопка для примения контрастности 
         private void contrastbutton_Click(object sender, EventArgs e)
         {
             
-            //CalculateAverageRgb();
             ResetImage();
             histogram.Clear();
-            //AdjustContrast(contrastValue);
             if (float.TryParse(contrasttextBox.Text, out float contrastValue))
             {
-                // Теперь у вас есть правильное значение contrastValue
                 AdjustContrast(contrastValue);
             }
             else
-            {
-                // Если введенный текст не может быть преобразован в float, обработайте ошибку или предоставьте сообщение пользователю.
-                MessageBox.Show("Некорректное значение контрастности. Пожалуйста, введите число.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            {         
+                MessageBox.Show("Некорректное значение контрастности. Введите число.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             DisplayImage(); // Обновляем отображение после преобразования
         }
@@ -416,6 +422,7 @@ namespace WindowsFormsApp1
             ConvertToGrayscale();
             DisplayImage(); // Обновляем отображение после преобразования
         }
+
 
         private void button5_Click(object sender, EventArgs e)
         {
