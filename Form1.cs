@@ -122,8 +122,9 @@ namespace WindowsFormsApp1
                     float normalizedValue = entry.Value / (float)maxHistogramValue;
                     int barHeight = (int)(normalizedValue * pictureBox2.Height / 1.2);
 
-                    float normalizedX = (float)i / (float)sortedKeys.Max();
-                    int x = (int)(normalizedX * (pictureBox2.Width - 2 * offsetX)) + offsetX;
+                //float normalizedX = (float)i / (float)sortedKeys.Max();
+                float normalizedX = (float)i / 255.0f;
+                int x = (int)(normalizedX * (pictureBox2.Width - 2 * offsetX)) + offsetX;
                     int y = pictureBox2.Height - barHeight;
 
                 // Проверка на переполнение x и y
@@ -146,6 +147,7 @@ namespace WindowsFormsApp1
                     }
 
                 ev.Graphics.DrawLine(pen, x, pictureBox2.Height, x, y);
+
                 }
           
             // Отрисовка вертикальных подписей
@@ -182,13 +184,13 @@ namespace WindowsFormsApp1
                 }
             }
 
-            //Console.WriteLine("Brightness\tPixel Count");
-            //foreach (var entry in histogram)
-            //{
-            //    Console.WriteLine($"{entry.Key}\t\t{entry.Value}");
-            //}
+            Console.WriteLine("Brightness\tPixel Count");
+            foreach (var entry in histogram)
+            {
+                Console.WriteLine($"{entry.Key}\t\t{entry.Value}");
+            }
             //label3.Text = histogram.Values.Max().ToString();
-            
+
             pictureBox2.Paint += pictureBox2_Paint;          
             pictureBox2.Invalidate(); 
         }

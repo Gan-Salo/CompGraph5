@@ -182,7 +182,7 @@
             // binarizelabel
             // 
             this.binarizelabel.AutoSize = true;
-            this.binarizelabel.Location = new System.Drawing.Point(556, 120);
+            this.binarizelabel.Location = new System.Drawing.Point(574, 120);
             this.binarizelabel.Name = "binarizelabel";
             this.binarizelabel.Size = new System.Drawing.Size(123, 13);
             this.binarizelabel.TabIndex = 13;
@@ -247,9 +247,8 @@
             this.label6.AutoSize = true;
             this.label6.Location = new System.Drawing.Point(685, 193);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(35, 13);
+            this.label6.Size = new System.Drawing.Size(0, 13);
             this.label6.TabIndex = 20;
-            this.label6.Text = "label6";
             // 
             // Form1
             // 
