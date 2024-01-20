@@ -72,11 +72,403 @@ namespace WindowsFormsApp1
         {
             if (originalImage != null)
             {
+                label1.Text = originalImage.Width.ToString();
+                label2.Text = originalImage.Height.ToString();
                 pictureBox1.Image = originalImage;
                 pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
                 
-                DrawHistogram();
+                //DrawHistogram();
             }
+        }
+        private void buttonGauss_Click(object sender, EventArgs e)
+        {
+            int filterSize = 2; // Пример коэффициента масштабирования
+            originalImage = ApplyUniformNoiseFilter(originalImage, filterSize);
+            DisplayImage(); // Обновляем отображение после масштабирования
+
+        }
+        private void buttonSharpness_Click(object sender, EventArgs e)
+        {
+            int strength = 8; // Пример коэффициента масштабирования
+            originalImage = ApplySharpeningFilter(originalImage, strength);
+            DisplayImage(); // Обновляем отображение после масштабирования
+        }
+        private void buttonUniform_Click(object sender, EventArgs e)
+        {
+            int filterSize = 2; // Пример коэффициента масштабирования
+            originalImage = ApplyGaussianNoiseFilter(originalImage, filterSize);
+            DisplayImage(); // Обновляем отображение после масштабирования
+        }
+
+        private void buttonEdge_Click(object sender, EventArgs e)
+        {
+            int threshold = 127;
+            originalImage = ApplyEdgeDetection(originalImage, threshold);
+            DisplayImage(); // Обновляем отображение после масштабирования
+        }
+        private void buttonNoise_Click(object sender, EventArgs e)
+        {
+            double noiseLevel = 0.2; // Пример коэффициента масштабирования
+            originalImage = AddNoise(originalImage, noiseLevel);
+            DisplayImage(); // Обновляем отображение после масштабирования
+        }
+
+        private Bitmap AddNoise(Bitmap originalImage, double noiseLevel)
+        {
+            Random random = new Random();
+            Bitmap noisyImage = new Bitmap(originalImage.Width, originalImage.Height);
+
+            for (int y = 0; y < originalImage.Height; y++)
+            {
+                for (int x = 0; x < originalImage.Width; x++)
+                {
+                    Color pixelColor = originalImage.GetPixel(x, y);
+
+                    int noiseR = AddRandomNoise(pixelColor.R, noiseLevel, random);
+                    int noiseG = AddRandomNoise(pixelColor.G, noiseLevel, random);
+                    int noiseB = AddRandomNoise(pixelColor.B, noiseLevel, random);
+
+                    Color noisyPixel = Color.FromArgb(noiseR, noiseG, noiseB);
+                    noisyImage.SetPixel(x, y, noisyPixel);
+                }
+            }
+
+            return noisyImage;
+        }
+
+        private int AddRandomNoise(int originalValue, double noiseLevel, Random random)
+        {
+            int noise = (int)(noiseLevel * random.NextDouble() * 255);
+            int noisyValue = originalValue + random.Next(-noise, noise + 1);
+
+            return Clamp(noisyValue, 0, 255);
+
+        }
+
+        private Bitmap ApplyUniformNoiseFilter(Bitmap originalImage, int filterSize)
+        {
+            Bitmap filteredImage = new Bitmap(originalImage.Width, originalImage.Height);
+
+            for (int y = 0; y < originalImage.Height; y++)
+            {
+                for (int x = 0; x < originalImage.Width; x++)
+                {
+                    Color newColor = CalculateUniformNoiseColor(originalImage, x, y, filterSize);
+                    filteredImage.SetPixel(x, y, newColor);
+                }
+            }
+
+            return filteredImage;
+        }
+
+        private Color CalculateUniformNoiseColor(Bitmap image, int centerX, int centerY, int filterSize)
+        {
+            int totalRed = 0, totalGreen = 0, totalBlue = 0;
+            int pixelCount = 0;
+
+            int halfSize = filterSize / 2;
+
+            for (int i = -halfSize; i <= halfSize; i++)
+            {
+                for (int j = -halfSize; j <= halfSize; j++)
+                {
+                    int x = Clamp(centerX + i, 0, image.Width - 1);
+                    int y = Clamp(centerY + j, 0, image.Height - 1);
+
+                    Color pixelColor = image.GetPixel(x, y);
+
+                    totalRed += pixelColor.R;
+                    totalGreen += pixelColor.G;
+                    totalBlue += pixelColor.B;
+
+                    pixelCount++;
+                }
+            }
+
+            int meanRed = totalRed / pixelCount;
+            int meanGreen = totalGreen / pixelCount;
+            int meanBlue = totalBlue / pixelCount;
+
+            return Color.FromArgb(meanRed, meanGreen, meanBlue);
+        }
+
+        private Bitmap ApplyGaussianNoiseFilter(Bitmap originalImage, double sigma)
+        {
+            int filterSize = (int)Math.Ceiling(6 * sigma); // Вычисление размера фильтра по параметру sigma
+            if (filterSize % 2 == 0)
+                filterSize++; // Убедимся, что размер фильтра нечетный
+
+            Bitmap filteredImage = new Bitmap(originalImage.Width, originalImage.Height);
+
+            for (int y = 0; y < originalImage.Height; y++)
+            {
+                for (int x = 0; x < originalImage.Width; x++)
+                {
+                    Color newColor = CalculateGaussianNoiseColor(originalImage, x, y, filterSize, sigma);
+                    filteredImage.SetPixel(x, y, newColor);
+                }
+            }
+
+            return filteredImage;
+        }
+
+        private Color CalculateGaussianNoiseColor(Bitmap image, int centerX, int centerY, int filterSize, double sigma)
+        {
+            int halfSize = filterSize / 2;
+
+            double[] weights = new double[filterSize];
+            double weightSum = 0;
+
+            // Рассчитываем веса Гауссова ядра
+            for (int i = -halfSize; i <= halfSize; i++)
+            {
+                weights[i + halfSize] = Math.Exp(-(i * i) / (2 * sigma * sigma));
+                weightSum += weights[i + halfSize];
+            }
+
+            int totalRed = 0, totalGreen = 0, totalBlue = 0;
+
+            for (int i = -halfSize; i <= halfSize; i++)
+            {
+                int x = Clamp(centerX + i, 0, image.Width - 1);
+                int y = Clamp(centerY + i, 0, image.Height - 1);
+
+                Color pixelColor = image.GetPixel(x, y);
+
+                totalRed += (int)(pixelColor.R * weights[i + halfSize] / weightSum);
+                totalGreen += (int)(pixelColor.G * weights[i + halfSize] / weightSum);
+                totalBlue += (int)(pixelColor.B * weights[i + halfSize] / weightSum);
+            }
+
+            return Color.FromArgb(totalRed, totalGreen, totalBlue);
+        }
+
+        private Bitmap ApplySharpeningFilter(Bitmap originalImage, double strength)
+        {
+            Bitmap sharpenedImage = new Bitmap(originalImage.Width, originalImage.Height);
+
+            for (int y = 1; y < originalImage.Height - 1; y++)
+            {
+                for (int x = 1; x < originalImage.Width - 1; x++)
+                {
+                    Color centerPixel = originalImage.GetPixel(x, y);
+
+                    int newR = (int)(centerPixel.R + strength * (centerPixel.R - GetAverageNeighborColor(originalImage, x, y, 'R')));
+                    int newG = (int)(centerPixel.G + strength * (centerPixel.G - GetAverageNeighborColor(originalImage, x, y, 'G')));
+                    int newB = (int)(centerPixel.B + strength * (centerPixel.B - GetAverageNeighborColor(originalImage, x, y, 'B')));
+
+                    newR = Clamp(newR, 0, 255);
+                    newG = Clamp(newG, 0, 255);
+                    newB = Clamp(newB, 0, 255);
+
+                    Color newPixelColor = Color.FromArgb(newR, newG, newB);
+                    sharpenedImage.SetPixel(x, y, newPixelColor);
+                }
+            }
+
+            return sharpenedImage;
+        }
+
+        private Bitmap ApplyEdgeDetection(Bitmap originalImage, int threshold)
+        {
+            Bitmap edgeImage = new Bitmap(originalImage.Width, originalImage.Height);
+
+            int[,] sobelX = { { -1, 0, 1 }, { -2, 0, 2 }, { -1, 0, 1 } };
+            int[,] sobelY = { { -1, -2, -1 }, { 0, 0, 0 }, { 1, 2, 1 } };
+
+            for (int y = 1; y < originalImage.Height - 1; y++)
+            {
+                for (int x = 1; x < originalImage.Width - 1; x++)
+                {
+                    int gxR = CalculateGradient(originalImage, x, y, sobelX, 'R');
+                    int gyR = CalculateGradient(originalImage, x, y, sobelY, 'R');
+
+                    int gxG = CalculateGradient(originalImage, x, y, sobelX, 'G');
+                    int gyG = CalculateGradient(originalImage, x, y, sobelY, 'G');
+
+                    int gxB = CalculateGradient(originalImage, x, y, sobelX, 'B');
+                    int gyB = CalculateGradient(originalImage, x, y, sobelY, 'B');
+
+                    int edgeR = Clamp((int)Math.Sqrt(gxR * gxR + gyR * gyR), 0, 255);
+                    int edgeG = Clamp((int)Math.Sqrt(gxG * gxG + gyG * gyG), 0, 255);
+                    int edgeB = Clamp((int)Math.Sqrt(gxB * gxB + gyB * gyB), 0, 255);
+
+                    //int edgeR = (Math.Abs(gxR) + Math.Abs(gyR) > threshold) ? 255 : 0;
+                    //int edgeG = (Math.Abs(gxG) + Math.Abs(gyG) > threshold) ? 255 : 0;
+                    //int edgeB = (Math.Abs(gxB) + Math.Abs(gyB) > threshold) ? 255 : 0;
+
+                    edgeR = (edgeR > threshold) ? 255 : 0;
+                    edgeG = (edgeG > threshold) ? 255 : 0;
+                    edgeB = (edgeB > threshold) ? 255 : 0;
+
+
+                    //Color edgePixel = Color.FromArgb(edgeR, edgeG, edgeB);
+                    int brightness = (int)(0.299 * edgeR + 0.587 * edgeG + 0.114 * edgeB);
+
+                    // Применяем порог
+                    int newColor = (brightness > threshold) ? 255 : 0;
+
+                    Color edgePixel = Color.FromArgb(newColor, newColor, newColor);
+
+                    edgeImage.SetPixel(x, y, edgePixel);
+                }
+            }
+
+            return edgeImage;
+        }
+
+        private int CalculateGradient(Bitmap image, int x, int y, int[,] filter, char channel)
+        {
+            int sum = 0;
+
+            for (int i = -1; i <= 1; i++)
+            {
+                for (int j = -1; j <= 1; j++)
+                {
+                    Color pixelColor = image.GetPixel(x + i, y + j);
+
+                    int filterValue = filter[i + 1, j + 1];
+
+                    switch (channel)
+                    {
+                        case 'R':
+                            sum += filterValue * pixelColor.R;
+                            break;
+                        case 'G':
+                            sum += filterValue * pixelColor.G;
+                            break;
+                        case 'B':
+                            sum += filterValue * pixelColor.B;
+                            break;
+                    }
+                }
+            }
+
+            return sum;
+        }
+
+
+
+        private int GetAverageNeighborColor(Bitmap image, int x, int y, char channel)
+        {
+            int sum = 0;
+
+            for (int i = -1; i <= 1; i++)
+            {
+                for (int j = -1; j <= 1; j++)
+                {
+                    Color pixelColor = image.GetPixel(x + i, y + j);
+
+                    switch (channel)
+                    {
+                        case 'R':
+                            sum += pixelColor.R;
+                            break;
+                        case 'G':
+                            sum += pixelColor.G;
+                            break;
+                        case 'B':
+                            sum += pixelColor.B;
+                            break;
+                    }
+                }
+            }
+
+            return sum / 9;
+        }
+
+        
+
+
+
+        private Bitmap BilinearScale(Bitmap originalImage, double scaleFactor)
+        {
+            int newWidth = (int)(originalImage.Width * scaleFactor);
+            int newHeight = (int)(originalImage.Height * scaleFactor);
+
+            Bitmap scaledImage = new Bitmap(newWidth, newHeight);
+
+            for (int i = 0; i < newWidth; i++)
+            {
+                for (int j = 0; j < newHeight; j++)
+                {
+                    double originalX = i / scaleFactor;
+                    double originalY = j / scaleFactor;
+
+                    int x1 = (int)Math.Floor(originalX);
+                    int x2 = Math.Min(x1 + 1, originalImage.Width - 1);
+                    int y1 = (int)Math.Floor(originalY);
+                    int y2 = Math.Min(y1 + 1, originalImage.Height - 1);
+
+                    Color topLeft = originalImage.GetPixel(x1, y1);
+                    Color topRight = originalImage.GetPixel(x2, y1);
+                    Color bottomLeft = originalImage.GetPixel(x1, y2);
+                    Color bottomRight = originalImage.GetPixel(x2, y2);
+
+                    double xFraction = originalX - x1;
+                    double yFraction = originalY - y1;
+
+                    int red = (int)((1 - xFraction) * (1 - yFraction) * topLeft.R +
+                                    xFraction * (1 - yFraction) * topRight.R +
+                                    (1 - xFraction) * yFraction * bottomLeft.R +
+                                    xFraction * yFraction * bottomRight.R);
+
+                    int green = (int)((1 - xFraction) * (1 - yFraction) * topLeft.G +
+                                      xFraction * (1 - yFraction) * topRight.G +
+                                      (1 - xFraction) * yFraction * bottomLeft.G +
+                                      xFraction * yFraction * bottomRight.G);
+
+                    int blue = (int)((1 - xFraction) * (1 - yFraction) * topLeft.B +
+                                     xFraction * (1 - yFraction) * topRight.B +
+                                     (1 - xFraction) * yFraction * bottomLeft.B +
+                                     xFraction * yFraction * bottomRight.B);
+
+                    Color interpolatedColor = Color.FromArgb(red, green, blue);
+                    scaledImage.SetPixel(i, j, interpolatedColor);
+                }
+            }
+
+            return scaledImage;
+        }
+        private Bitmap NearestNeighborScale(Bitmap originalImage, int scaleFactor)
+        {
+            int newWidth = originalImage.Width * scaleFactor;
+            int newHeight = originalImage.Height * scaleFactor;
+
+            Bitmap scaledImage = new Bitmap(newWidth, newHeight);
+
+            for (int i = 0; i < newWidth; i++)
+            {
+                for (int j = 0; j < newHeight; j++)
+                {
+                    int originalX = (int)Math.Round((double)i / scaleFactor);
+                    int originalY = (int)Math.Round((double)j / scaleFactor);
+
+                    originalX = Math.Min(originalX, originalImage.Width - 1);
+                    originalY = Math.Min(originalY, originalImage.Height - 1);
+
+                    Color originalColor = originalImage.GetPixel(originalX, originalY);
+                    scaledImage.SetPixel(i, j, originalColor);
+                }
+            }
+
+            return scaledImage;
+        }
+        private void buttonScaleBilineal_Click(object sender, EventArgs e)
+        {
+            int scaleFactor = 2; // Пример коэффициента масштабирования
+            originalImage = BilinearScale(originalImage, scaleFactor);
+            DisplayImage(); // Обновляем отображение после масштабирования
+        }
+        private void buttonScaleNeighbour_Click(object sender, EventArgs e)
+        {
+            int scaleFactor = 2; // Пример коэффициента масштабирования
+            originalImage = NearestNeighborScale(originalImage, scaleFactor);          
+            DisplayImage(); // Обновляем отображение после масштабирования
+        }
+        private void buttonScaleBicubic_Click(object sender, EventArgs e)
+        {
+
         }
 
         //Функция сброса изображения
@@ -434,6 +826,6 @@ namespace WindowsFormsApp1
             DisplayImage(); // Обновляем отображение после преобразования
         }
 
-
+       
     }
 }

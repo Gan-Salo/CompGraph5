@@ -49,6 +49,13 @@
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
+            this.buttonScaleNeighbour = new System.Windows.Forms.Button();
+            this.buttonScaleBilineal = new System.Windows.Forms.Button();
+            this.buttonGauss = new System.Windows.Forms.Button();
+            this.buttonNoise = new System.Windows.Forms.Button();
+            this.buttonUniform = new System.Windows.Forms.Button();
+            this.buttonSharpness = new System.Windows.Forms.Button();
+            this.buttonEdge = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
@@ -250,11 +257,88 @@
             this.label6.Size = new System.Drawing.Size(0, 13);
             this.label6.TabIndex = 20;
             // 
+            // buttonScaleNeighbour
+            // 
+            this.buttonScaleNeighbour.Location = new System.Drawing.Point(557, 342);
+            this.buttonScaleNeighbour.Name = "buttonScaleNeighbour";
+            this.buttonScaleNeighbour.Size = new System.Drawing.Size(89, 23);
+            this.buttonScaleNeighbour.TabIndex = 21;
+            this.buttonScaleNeighbour.Text = "Ближ. соседа";
+            this.buttonScaleNeighbour.UseVisualStyleBackColor = true;
+            this.buttonScaleNeighbour.Click += new System.EventHandler(this.buttonScaleNeighbour_Click);
+            // 
+            // buttonScaleBilineal
+            // 
+            this.buttonScaleBilineal.Location = new System.Drawing.Point(652, 342);
+            this.buttonScaleBilineal.Name = "buttonScaleBilineal";
+            this.buttonScaleBilineal.Size = new System.Drawing.Size(85, 23);
+            this.buttonScaleBilineal.TabIndex = 22;
+            this.buttonScaleBilineal.Text = "Билинейная";
+            this.buttonScaleBilineal.UseVisualStyleBackColor = true;
+            this.buttonScaleBilineal.Click += new System.EventHandler(this.buttonScaleBilineal_Click);
+            // 
+            // buttonGauss
+            // 
+            this.buttonGauss.Location = new System.Drawing.Point(563, 517);
+            this.buttonGauss.Name = "buttonGauss";
+            this.buttonGauss.Size = new System.Drawing.Size(146, 23);
+            this.buttonGauss.TabIndex = 23;
+            this.buttonGauss.Text = "Фильтр Гаусса";
+            this.buttonGauss.UseVisualStyleBackColor = true;
+            this.buttonGauss.Click += new System.EventHandler(this.buttonGauss_Click);
+            // 
+            // buttonNoise
+            // 
+            this.buttonNoise.Location = new System.Drawing.Point(563, 554);
+            this.buttonNoise.Name = "buttonNoise";
+            this.buttonNoise.Size = new System.Drawing.Size(146, 23);
+            this.buttonNoise.TabIndex = 24;
+            this.buttonNoise.Text = "Шум";
+            this.buttonNoise.UseVisualStyleBackColor = true;
+            this.buttonNoise.Click += new System.EventHandler(this.buttonNoise_Click);
+            // 
+            // buttonUniform
+            // 
+            this.buttonUniform.Location = new System.Drawing.Point(411, 517);
+            this.buttonUniform.Name = "buttonUniform";
+            this.buttonUniform.Size = new System.Drawing.Size(146, 23);
+            this.buttonUniform.TabIndex = 25;
+            this.buttonUniform.Text = "Равномерный Фильтр";
+            this.buttonUniform.UseVisualStyleBackColor = true;
+            this.buttonUniform.Click += new System.EventHandler(this.buttonUniform_Click);
+            // 
+            // buttonSharpness
+            // 
+            this.buttonSharpness.Location = new System.Drawing.Point(470, 554);
+            this.buttonSharpness.Name = "buttonSharpness";
+            this.buttonSharpness.Size = new System.Drawing.Size(87, 23);
+            this.buttonSharpness.TabIndex = 26;
+            this.buttonSharpness.Text = "Резкость";
+            this.buttonSharpness.UseVisualStyleBackColor = true;
+            this.buttonSharpness.Click += new System.EventHandler(this.buttonSharpness_Click);
+            // 
+            // buttonEdge
+            // 
+            this.buttonEdge.Location = new System.Drawing.Point(377, 554);
+            this.buttonEdge.Name = "buttonEdge";
+            this.buttonEdge.Size = new System.Drawing.Size(87, 23);
+            this.buttonEdge.TabIndex = 27;
+            this.buttonEdge.Text = "Оконтуривание";
+            this.buttonEdge.UseVisualStyleBackColor = true;
+            this.buttonEdge.Click += new System.EventHandler(this.buttonEdge_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1015, 598);
+            this.Controls.Add(this.buttonEdge);
+            this.Controls.Add(this.buttonSharpness);
+            this.Controls.Add(this.buttonUniform);
+            this.Controls.Add(this.buttonNoise);
+            this.Controls.Add(this.buttonGauss);
+            this.Controls.Add(this.buttonScaleBilineal);
+            this.Controls.Add(this.buttonScaleNeighbour);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label4);
@@ -311,6 +395,13 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Button buttonScaleNeighbour;
+        private System.Windows.Forms.Button buttonScaleBilineal;
+        private System.Windows.Forms.Button buttonGauss;
+        private System.Windows.Forms.Button buttonNoise;
+        private System.Windows.Forms.Button buttonUniform;
+        private System.Windows.Forms.Button buttonSharpness;
+        private System.Windows.Forms.Button buttonEdge;
     }
 }
 
